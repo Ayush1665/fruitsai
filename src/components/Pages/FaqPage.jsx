@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import '../Styles/FaqPage.css';
 import FAQItem from './FAQItem';
 import FAQForm from './FAQForm';
 import sampleImage1 from '../assets/ai.jpeg'; // Example images

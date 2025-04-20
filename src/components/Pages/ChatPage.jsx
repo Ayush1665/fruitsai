@@ -1,6 +1,5 @@
 import React from 'react';
 import ChatBot from 'react-simple-chatbot';
-import '../Styles/ChatPage.css'; // Import your CSS file
 
 const fruitDescriptions = {
   mango: "Known as the 'king of fruits,' mangoes are sweet, juicy, and tropical, packed with vitamins A and C.",

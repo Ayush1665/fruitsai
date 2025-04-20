@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../Styles/TranslatePage.css";
+import './style.css';
 
 // Languages array
 const languages = [
@@ -107,6 +107,11 @@ const TranslatePage = () => {
   const [error, setError] = useState("");
 
   const handleTranslate = async () => {
+    if (!text.trim()) {
+      setError("Please enter the text for translation");
+      return;
+    }
+
     setLoading(true);
     setError("");
     setTranslatedText("");
@@ -127,71 +132,145 @@ const TranslatePage = () => {
       const data = await response.json();
       setTranslatedText(data[0].map((item) => item[0]).join(""));
     } catch (error) {
-      setError(`Please enter the text for translation`);
+      setError("Failed to translate. Please try again.");
+      console.error("Translation error:", error);
     } finally {
       setLoading(false);
     }
   };
+
   const handleClear = () => {
     setText(""); 
     setTranslatedText(""); 
     setError(""); 
   };
 
-
   return (
-    <div className="translate-container">
-      <h1>Text Translator</h1>
-      <div className="input-group">
-        <label htmlFor="text-input">Enter text to translate:</label>
-        <input
-          type="text"
-          id="text-input"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-        />
-      </div>
-      <div className="language-selection">
-        <label htmlFor="input-language">Input Language:</label>
-        <select
-          id="input-language"
-          value={inputLanguage}
-          onChange={(e) => setInputLanguage(e.target.value)}
-        >
-          {languages.map((lang) => (
-            <option key={lang.code} value={lang.code}>
-              {lang.name}
-            </option>
-          ))}
-        </select>
-        <label htmlFor="output-language">Output Language:</label>
-        <select
-          id="output-language"
-          value={outputLanguage}
-          onChange={(e) => setOutputLanguage(e.target.value)}
-        >
-          {languages.map((lang) => (
-            <option key={lang.code} value={lang.code}>
-              {lang.name}
-            </option>
-          ))}
-        </select>
-      </div>
-      <button className="translate-button" onClick={handleTranslate} disabled={loading}>
-        {loading ? "Translating..." : "Translate"}
-      </button>
-      <button className="clear-button" onClick={handleClear}>
-          Clear
-      </button>
-      {error && <p className="error">{error}</p>}
-      {translatedText && (
-        <div className="result">
-          <h2>Translated Text:</h2>
-          <p>{translatedText}</p>
+    <div className="min-h-screen bg-[hsl(240,10%,3.9%)] text-white p-4 md:p-10">
+      <div className="max-w-xl mx-auto animate-fade-in">
+        <h1 className="text-2xl md:text-4xl font-bold text-center mb-8 text-blue-400 transform transition-all duration-500 hover:scale-105">
+          Text Translator
+        </h1>
+        
+        {/* Input Text */}
+        <div className="mb-6">
+          <label htmlFor="text-input" className="block mb-2 text-sm font-medium text-gray-300">
+            Enter text to translate:
+          </label>
+          <textarea
+            id="text-input"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            className="w-full h-13 p-3 rounded-lg bg-gray-800 border border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white transition-all duration-300 placeholder-gray-400 resize-none"
+            placeholder="Type your text here..."
+          />
         </div>
-      )}
+        
+        {/* Language Selection */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div className="animate-fade-in-up delay-100">
+            <label htmlFor="input-language" className="block mb-2 text-sm font-medium text-gray-300">
+              Input Language:
+            </label>
+            <select
+              id="input-language"
+              value={inputLanguage}
+              onChange={(e) => setInputLanguage(e.target.value)}
+              className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:ring-2 focus:ring-blue-500 text-white transition-all duration-300 hover:bg-gray-700 cursor-pointer"
+            >
+              {languages.map((lang) => (
+                <option key={lang.code} value={lang.code}>
+                  {lang.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="animate-fade-in-up delay-150">
+            <label htmlFor="output-language" className="block mb-2 text-sm font-medium text-gray-300">
+              Output Language:
+            </label>
+            <select
+              id="output-language"
+              value={outputLanguage}
+              onChange={(e) => setOutputLanguage(e.target.value)}
+              className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:ring-2 focus:ring-blue-500 text-white transition-all duration-300 hover:bg-gray-700 cursor-pointer"
+            >
+              {languages.map((lang) => (
+                <option key={lang.code} value={lang.code}>
+                  {lang.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+        
+        {/* Buttons */}
+        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+          <button 
+            onClick={handleTranslate} 
+            disabled={loading}
+            className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed shadow-lg hover:shadow-blue-500/20 animate-fade-in-up delay-200"
+          >
+            {loading ? (
+              <span className="flex items-center justify-center">
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Translating...
+              </span>
+            ) : (
+              <span className="flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+                </svg>
+                Translate
+              </span>
+            )}
+          </button>
+          <button 
+            onClick={handleClear}
+            className="flex-1 bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-600 hover:to-gray-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-gray-500/10 animate-fade-in-up delay-250"
+          >
+            <span className="flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+              Clear
+            </span>
+          </button>
+        </div>
+        
+        {/* Error Message */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-900/30 border border-red-700 rounded-lg animate-fade-in">
+            <div className="flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+              <p className="text-red-400">{error}</p>
+            </div>
+          </div>
+        )}
+        
+        {/* Translation Result */}
+        {translatedText && (
+          <div className="mt-6 p-6 bg-gray-800/50 border border-gray-700 rounded-lg backdrop-blur-sm animate-fade-in">
+            <h2 className="text-xl font-semibold mb-4 text-blue-400 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Translated Text:
+            </h2>
+            <p className="text-gray-200 text-lg bg-gray-900/30 p-4 rounded-lg border border-gray-700">
+              {translatedText}
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
 
 export default TranslatePage;
+
